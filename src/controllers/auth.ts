@@ -29,3 +29,28 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: '7d',
+    });
+
+    res.json({ user, token });
+  } catch (error) {
+    res.status(500).json({ error: 'Error logging in' });
+  }
+}; 
