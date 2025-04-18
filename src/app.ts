@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
 import authRoutes from './routes/authRoutes';
-
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -45,14 +45,8 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-
-// 404 handler 
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Route not found'
-  });
-});
+// Error handler
+app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 3001;
