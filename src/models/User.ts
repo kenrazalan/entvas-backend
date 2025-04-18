@@ -7,6 +7,8 @@ export interface IUser extends Document {
   name: string;
   isManager: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<IUser>(
@@ -29,7 +31,11 @@ const userSchema = new Schema<IUser>(
       default: false,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
 
 userSchema.pre('save', async function (next) {
