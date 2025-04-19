@@ -7,6 +7,7 @@ A clean, scalable, and maintainable Node.js backend application built with Expre
 - User authentication (register, login)
 - JWT-based authorization
 - MongoDB database with Mongoose ORM
+- SendGrid email service integration
 - Input validation with express-validator
 - Centralized error handling
 - Structured logging
@@ -36,6 +37,7 @@ src/
 
 - Node.js (v14 or higher)
 - MongoDB (v4.4 or higher)
+- SendGrid account
 - npm or yarn
 
 ### Installation
@@ -53,15 +55,24 @@ src/
 
 3. Create a `.env` file in the root directory with the following variables:
    ```
-   NODE_ENV=development
    PORT=3001
-   MONGODB_URI=mongodb://localhost:27017/entvas
+   MONGODB_URI=your-mongodb-connection-string
    JWT_SECRET=your-secret-key
-   JWT_EXPIRES_IN=7d
-   LOG_LEVEL=info
+   SENDGRID_API_KEY=your-sendgrid-api-key
+   SENDGRID_FROM_EMAIL=your-verified-sender@yourdomain.com
+   FRONTEND_URL=http://localhost:3000
    ```
 
-4. Start the development server:
+4. Set up SendGrid:
+   - Create a SendGrid account at https://signup.sendgrid.com
+   - Go to Settings → API Keys
+   - Create an API key with "Mail Send" permissions
+   - Go to Settings → Sender Authentication
+   - Click "Verify a Single Sender"
+   - Fill in your sender information and verify your email
+   - Add the API key and verified sender email to your .env file
+
+5. Start the development server:
    ```
    npm run dev
    ```

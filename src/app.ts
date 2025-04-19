@@ -7,7 +7,12 @@ import { UserRepository } from './repositories/user.repository';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 import { PORT, NODE_ENV } from './config/config';
-import { createTestRoutes } from './routes/test.routes';
+import { TaskRepository } from './repositories/task.repository';
+import { EmailService } from './services/email.service';
+import { TaskService } from './services/task.service';
+import { TaskController } from './controllers/task.controller';
+import { createTaskRoutes } from './routes/task.routes';
+
 
 // Create Express app
 const app = express();
@@ -20,6 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 // Initialize dependencies
 let userRepository: UserRepository;
 let authService: AuthService;
+
+// Initialize task-related dependencies
+const taskRepository = new TaskRepository();
+const emailService = new EmailService();
+const taskService = new TaskService(taskRepository, emailService);
+const taskController = new TaskController(taskService);
 
 // Initialize app
 const initializeApp = async () => {
@@ -47,6 +58,7 @@ const initializeApp = async () => {
 
     // API routes
     app.use('/api/auth', createAuthRoutes(authService));
+    app.use('/api/tasks', createTaskRoutes(taskController));
 
 
     // 404 handler - Keep this last
