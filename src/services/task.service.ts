@@ -3,6 +3,7 @@ import { EmailService } from './email.service';
 import { ApiError } from '../middleware/errorHandler';
 import { ITask } from '../models/Task';
 import { logger } from '../utils/logger';
+import mongoose from 'mongoose';
 
 export class TaskService {
   constructor(
@@ -14,14 +15,14 @@ export class TaskService {
     try {
       const task = await this.taskRepository.create({
         ...taskData,
-        createdBy: userId
+        createdBy: new mongoose.Types.ObjectId(userId)
       });
 
-    //   await this.emailService.sendTaskApprovalEmail(
-    //     task.assigneeEmail,
-    //     task.title,
-    //     task.token
-    //   );
+      await this.emailService.sendTaskApprovalEmail(
+        task.assigneeEmail,
+        task.title,
+        task.token
+      );
 
       return task;
     } catch (error) {
@@ -50,7 +51,11 @@ export class TaskService {
     }
 
     const status = approve ? 'APPROVED' : 'REJECTED';
-    return this.taskRepository.update(task.id, { status });
+    const updatedTask = await this.taskRepository.update(task.id, { status });
+    if (!updatedTask) {
+      throw new ApiError(500, 'Failed to update task');
+    }
+    return updatedTask;
   }
 
   async deleteTask(taskId: string, userId: string): Promise<void> {

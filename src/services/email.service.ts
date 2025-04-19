@@ -1,27 +1,17 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import { logger } from '../utils/logger';
 
 export class EmailService {
-  private transporter: nodemailer.Transporter;
-
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
   }
 
   async sendTaskApprovalEmail(to: string, taskTitle: string, token: string): Promise<void> {
     const approvalLink = `${process.env.FRONTEND_URL}/tasks/respond/${token}`;
 
-    const mailOptions = {
-      from: process.env.SMTP_FROM,
+    const msg = {
       to,
+      from: process.env.SENDGRID_FROM_EMAIL || '',
       subject: 'Task Approval Request',
       html: `
         <h1>Task Approval Request</h1>
@@ -33,11 +23,12 @@ export class EmailService {
     };
 
     try {
-      await this.transporter.sendMail(mailOptions);
+      await sgMail.send(msg);
       logger.info(`Task approval email sent to ${to}`);
-    } catch (error) {
-      logger.error('Error sending task approval email', error as Error);
-      throw error;
+    } catch (error: unknown) {
+      // Log the error details in a type-safe way
+      logger.error('Error sending task approval email', error instanceof Error ? error : new Error(String(error)));
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

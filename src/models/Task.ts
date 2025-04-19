@@ -5,7 +5,7 @@ export interface ITask extends Document {
   title: string;
   description: string;
   assigneeEmail: string;
-  createdBy: Schema.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   token: string;
   tokenExpiry: Date;
