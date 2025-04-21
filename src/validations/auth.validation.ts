@@ -11,9 +11,7 @@ export const registerValidation = [
   
   body('password')
     .isLength({ min: PASSWORD_MIN_LENGTH })
-    .withMessage(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`)
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+    .withMessage(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`),
   
   body('name')
     .isString()
