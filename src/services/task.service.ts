@@ -92,4 +92,42 @@ export class TaskService {
 
     return task;
   }
+
+  async getTaskById(taskId: string, userId: string): Promise<ITask> {
+    const task = await this.taskRepository.findById(taskId);
+
+    if (!task) {
+      throw new ApiError(404, 'Task not found');
+    }
+
+    if (task.createdBy.toString() !== userId) {
+      throw new ApiError(403, 'Not authorized to view this task');
+    }
+
+    return task;
+  }
+
+  async updateTask(taskId: string, updateData: Partial<ITask>, userId: string): Promise<ITask> {
+    const task = await this.taskRepository.findById(taskId);
+
+    if (!task) {
+      throw new ApiError(404, 'Task not found');
+    }
+
+    if (task.createdBy.toString() !== userId) {
+      throw new ApiError(403, 'Not authorized to update this task');
+    }
+
+    // If status is being updated to APPROVED or REJECTED, prevent it
+    if (updateData.status && (updateData.status === 'APPROVED' || updateData.status === 'REJECTED')) {
+      throw new ApiError(400, 'Cannot directly update task status. Use the response endpoint instead.');
+    }
+
+    const updatedTask = await this.taskRepository.update(taskId, updateData);
+    if (!updatedTask) {
+      throw new ApiError(500, 'Failed to update task');
+    }
+
+    return updatedTask;
+  }
 }

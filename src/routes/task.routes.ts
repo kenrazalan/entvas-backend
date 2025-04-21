@@ -16,6 +16,8 @@ export const createTaskRoutes = (taskController: TaskController): Router => {
   // Manager-only routes
   router.post('/', requireManager, taskValidation.create, taskController.createTask);
   router.get('/', requireManager, taskController.getUserTasks);
+  router.get('/:id', requireManager, taskController.getTaskById);
+  router.put('/:id', requireManager, taskValidation.update, taskController.updateTask);
   router.delete('/:id', requireManager, taskController.deleteTask);
 
 
