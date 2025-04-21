@@ -54,7 +54,8 @@ export class TaskController {
         status: task.status,
         createdAt: task.createdAt,
         isExpired: task.tokenExpiry < new Date(),
-        canRespond: task.status === 'PENDING' && task.tokenExpiry > new Date()
+        canRespond: task.status === 'PENDING' && task.tokenExpiry > new Date(),
+        assigneeEmail: task.assigneeEmail
       });
     } catch (error) {
       throw error;
