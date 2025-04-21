@@ -18,16 +18,39 @@ export class TaskService {
         createdBy: new mongoose.Types.ObjectId(userId)
       });
 
+      return task;
+    } catch (error) {
+      logger.error('Error creating task', error as Error);
+      throw error;
+    }
+  }
+
+  async sendTaskApprovalEmail(taskId: string, userId: string): Promise<void> {
+    const task = await this.taskRepository.findById(taskId);
+
+    if (!task) {
+      throw new ApiError(404, 'Task not found');
+    }
+
+    if (task.createdBy.toString() !== userId) {
+      throw new ApiError(403, 'Not authorized to send approval email for this task');
+    }
+
+    if (task.status !== 'PENDING') {
+      throw new ApiError(400, 'Cannot send approval email for a task that is not pending');
+    }
+
+    try {
       await this.emailService.sendTaskApprovalEmail(
         task.assigneeEmail,
         task.title,
         task.token
       );
-
-      return task;
+      
+      logger.info(`Approval email sent for task: ${taskId}`);
     } catch (error) {
-      logger.error('Error creating task', error as Error);
-      throw error;
+      logger.error('Error sending task approval email', error as Error);
+      throw new ApiError(500, 'Failed to send approval email');
     }
   }
 
