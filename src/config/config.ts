@@ -15,7 +15,7 @@ export const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 // Validation
-export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MIN_LENGTH = 4;
 export const NAME_MIN_LENGTH = 2;
 export const NAME_MAX_LENGTH = 50;
 
