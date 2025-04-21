@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { IUser } from './User';
 
 export interface ITask extends Document {
   title: string;
   description: string;
   assigneeEmail: string;
-  createdBy: mongoose.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId | IUser;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   token: string;
   tokenExpiry: Date;

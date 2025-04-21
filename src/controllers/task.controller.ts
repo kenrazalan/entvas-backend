@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { TaskService } from '../services/task.service';
+import { IUser } from '../models/User';
 
 export class TaskController {
   constructor(private taskService: TaskService) {}
@@ -47,6 +48,8 @@ export class TaskController {
       const { token } = req.params;
       const task = await this.taskService.getTaskByToken(token);
       
+      // Check if createdBy is populated
+      const creator = task.createdBy as IUser;
       
       res.json({
         title: task.title,
@@ -55,7 +58,10 @@ export class TaskController {
         createdAt: task.createdAt,
         isExpired: task.tokenExpiry < new Date(),
         canRespond: task.status === 'PENDING' && task.tokenExpiry > new Date(),
-        assigneeEmail: task.assigneeEmail
+        creator: {
+          name: creator.name || 'Unknown',
+          email: creator.email || 'Unknown'
+        }
       });
     } catch (error) {
       throw error;

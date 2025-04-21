@@ -18,20 +18,22 @@ export class TaskRepository implements ITaskRepository {
   }
 
   async findById(id: string): Promise<ITask | null> {
-    return Task.findById(id);
+    return Task.findById(id).populate('createdBy', 'name email');
   }
 
   async findByToken(token: string): Promise<ITask | null> {
-    return Task.findOne({ token });
+    return Task.findOne({ token }).populate('createdBy', 'name email');
   }
 
   async findByCreator(userId: string): Promise<ITask[]> {
     return Task.find({ createdBy: new Types.ObjectId(userId) })
+      .populate('createdBy', 'name email')
       .sort({ createdAt: -1 });
   }
 
   async update(id: string, updateData: Partial<ITask>): Promise<ITask | null> {
-    return Task.findByIdAndUpdate(id, updateData, { new: true });
+    return Task.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('createdBy', 'name email');
   }
 
   async delete(id: string): Promise<boolean> {

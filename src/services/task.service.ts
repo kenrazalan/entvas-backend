@@ -4,6 +4,8 @@ import { ApiError } from '../middleware/errorHandler';
 import { ITask } from '../models/Task';
 import { logger } from '../utils/logger';
 import mongoose from 'mongoose';
+import { UserRepository } from '../repositories/user.repository';
+import { IUser } from '../models/User';
 
 export class TaskService {
   constructor(
