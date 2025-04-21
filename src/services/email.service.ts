@@ -13,13 +13,8 @@ export class EmailService {
       to,
       from: process.env.SENDGRID_FROM_EMAIL || '',
       subject: 'Task Approval Request',
-      html: `
-        <h1>Task Approval Request</h1>
-        <p>You have a new task: ${taskTitle}</p>
-        <p>Please review and respond using the link below:</p>
-        <p><a href="${approvalLink}">Review Task</a></p>
-        <p>This link will expire in 7 days.</p>
-      `
+      text: `You have a new task: ${taskTitle}. Please review and respond using the link below: ${approvalLink}`,
+      html: `<p>You have a new task: ${taskTitle}. Please review and respond using the link below: <a href="${approvalLink}">${approvalLink}</a></p>`
     };
 
     try {
