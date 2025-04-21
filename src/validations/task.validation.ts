@@ -22,5 +22,30 @@ export const taskValidation = {
       .normalizeEmail(),
 
     validateRequest
+  ],
+  
+  update: [
+    body('title')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Title cannot be empty')
+      .isLength({ max: 100 })
+      .withMessage('Title must be at most 100 characters'),
+
+    body('description')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Description cannot be empty'),
+
+    body('assigneeEmail')
+      .optional()
+      .trim()
+      .isEmail()
+      .withMessage('Valid email address is required')
+      .normalizeEmail(),
+
+    validateRequest
   ]
 };

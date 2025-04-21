@@ -60,4 +60,22 @@ export class TaskController {
       throw error;
     }
   };
+
+  getTaskById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const task = await this.taskService.getTaskById(req.params.id, req.user.id);
+      res.json(task);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  updateTask = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const task = await this.taskService.updateTask(req.params.id, req.body, req.user.id);
+      res.json(task);
+    } catch (error) {
+      throw error;
+    }
+  };
 }
