@@ -78,4 +78,13 @@ export class TaskController {
       throw error;
     }
   };
+
+  sendTaskApprovalEmail = async (req: Request, res: Response): Promise<void> => {
+    try {
+      await this.taskService.sendTaskApprovalEmail(req.params.id, req.user.id);
+      res.status(200).json({ message: 'Approval email sent successfully' });
+    } catch (error) {
+      throw error;
+    }
+  };
 }

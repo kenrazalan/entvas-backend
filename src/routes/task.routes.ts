@@ -19,9 +19,7 @@ export const createTaskRoutes = (taskController: TaskController): Router => {
   router.get('/:id', requireManager, taskController.getTaskById);
   router.put('/:id', requireManager, taskValidation.update, taskController.updateTask);
   router.delete('/:id', requireManager, taskController.deleteTask);
-
-
-
+  router.post('/:id/send-approval', requireManager, taskController.sendTaskApprovalEmail);
 
   return router;
 };
