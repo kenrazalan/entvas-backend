@@ -34,9 +34,7 @@ export class TaskService {
       throw new ApiError(404, 'Task not found');
     }
 
-    if (task.createdBy.toString() !== userId) {
-      throw new ApiError(403, 'Not authorized to send approval email for this task');
-    }
+    this.checkTaskOwnership(task, userId, 'send approval email for');
 
     if (task.status !== 'PENDING') {
       throw new ApiError(400, 'Cannot send approval email for a task that is not pending');
@@ -90,9 +88,7 @@ export class TaskService {
       throw new ApiError(404, 'Task not found');
     }
 
-    if (task.createdBy.toString() !== userId) {
-      throw new ApiError(403, 'Not authorized to delete this task');
-    }
+    this.checkTaskOwnership(task, userId, 'delete');
 
     const deleted = await this.taskRepository.delete(taskId);
     if (!deleted) {
@@ -125,9 +121,7 @@ export class TaskService {
       throw new ApiError(404, 'Task not found');
     }
 
-    if (task.createdBy.toString() !== userId) {
-      throw new ApiError(403, 'Not authorized to view this task');
-    }
+    this.checkTaskOwnership(task, userId, 'view');
 
     return task;
   }
@@ -139,9 +133,7 @@ export class TaskService {
       throw new ApiError(404, 'Task not found');
     }
 
-    if (task.createdBy.toString() !== userId) {
-      throw new ApiError(403, 'Not authorized to update this task');
-    }
+    this.checkTaskOwnership(task, userId, 'update');
 
     // If status is being updated to APPROVED or REJECTED, prevent it
     if (updateData.status && (updateData.status === 'APPROVED' || updateData.status === 'REJECTED')) {
@@ -155,4 +147,18 @@ export class TaskService {
 
     return updatedTask;
   }
+
+  private getCreatedById(task: ITask): string {
+    return task.createdBy instanceof mongoose.Types.ObjectId
+      ? task.createdBy.toString()
+      : ((task.createdBy as unknown as IUser)._id as mongoose.Types.ObjectId).toString();
+  }
+
+  private checkTaskOwnership(task: ITask, userId: string, action: string): void {
+    const createdById = this.getCreatedById(task);
+    if (createdById !== userId) {
+      throw new ApiError(403, `Not authorized to ${action} this task`);
+    }
+  }
+
 }
